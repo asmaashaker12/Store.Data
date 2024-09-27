@@ -26,7 +26,7 @@ namespace Store.Repository
 
         public  IGenericRepository<TEntity, TKey> Repository<TEntity, TKey>() where TEntity : BaseEntity<TKey>
         {
-          if(_repositories is null)
+          if(_repositories is null||_repositories.Count==0)
                 _repositories = new Hashtable();
           var entityKey=typeof(TEntity).Name;
             if (_repositories.ContainsKey(entityKey))

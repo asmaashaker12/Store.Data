@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Store.Data.Entities;
 using Store.Repository.Interfaces;
+using Store.Repository.Specification;
+using Store.Repository.Specification.Product;
+using Store.Service.Helper;
 using Store.Service.Services.Dtos;
 using System;
 using System.Collections.Generic;
@@ -32,9 +35,12 @@ namespace Store.Service.Services
             return mappedBrand; ;
         }
 
-        public async Task<IReadOnlyList<ProductDetailsDto>> GetAllProductsAsync()
+        public async Task<PaginatedResultDto<ProductDetailsDto>> GetAllProductsAsync(ProductSpecification input)
         {
-            var products = await _unitOfWork.Repository<Product, int>().GetAllAsync();
+            var specs =new ProductWithSpecifcations(input);
+            var products = await _unitOfWork.Repository<Product,int>().GetAllwithSpecficicationAsync(specs);
+            var countSpecs = new ProductWithCountSpecification(input);
+            var count = await _unitOfWork.Repository<Product, int>().GetCountSpecficicationAsync(countSpecs);
             var mappedProducts =_mapper.Map<IReadOnlyList<ProductDetailsDto>>(products);
             //    = products.Select(x => new ProductDetailsDto
             //{
@@ -47,7 +53,7 @@ namespace Store.Service.Services
             //    TypeName=x.ProductType.Name,
             //    CreatAt=x.CreateTime
             //}).ToList();
-            return mappedProducts;
+            return new PaginatedResultDto<ProductDetailsDto>(input.PageIindex,input.PageSize,count,mappedProducts);
         }
 
        public  async Task<IReadOnlyList<ProductDetailsDto>>GetAllTypesAsync()
@@ -67,7 +73,8 @@ namespace Store.Service.Services
         {
             if(ProductId is null) 
                 throw new Exception("Product is null");
-            var product = await _unitOfWork.Repository<Product, int>().GetByIdAsync(ProductId.Value);
+            var productspec=new ProductWithSpecifcations(ProductId);
+            var product = await _unitOfWork.Repository<Product, int>().GetByIdSpecificationsAsync(productspec);
             if (product is null)
                 throw new Exception("Product Not Found");
             var mappedProductDetails = _mapper.Map<ProductDetailsDto>(product);
