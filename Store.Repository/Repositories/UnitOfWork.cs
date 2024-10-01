@@ -29,7 +29,7 @@ namespace Store.Repository
           if(_repositories is null||_repositories.Count==0)
                 _repositories = new Hashtable();
           var entityKey=typeof(TEntity).Name;
-            if (_repositories.ContainsKey(entityKey))
+            if (!_repositories.ContainsKey(entityKey))
             {
                 var repositoyType=typeof(GenericRepository<,>);
                 var reposirotyInstance=Activator.CreateInstance(repositoyType.MakeGenericType(typeof(TEntity),typeof(TKey)),_context);
