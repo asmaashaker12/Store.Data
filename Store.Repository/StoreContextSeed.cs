@@ -30,6 +30,13 @@ namespace Store.Repository
                     if (types is not null)
                         await storeDbContext.ProductTypes.AddRangeAsync(types);
                 }
+                if (storeDbContext.DeliveryMethods != null && !storeDbContext.DeliveryMethods.Any())
+                {
+                    var deliveryMethodData = File.ReadAllText("../Store.Repository/SeedData/delivery.json");
+                    var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryMethodData);
+                    if (deliveryMethods is not null)
+                        await storeDbContext.DeliveryMethods.AddRangeAsync(deliveryMethods);
+                }
                 if (storeDbContext.Products != null && !storeDbContext.Products.Any())
                 {
                     var prouctData = File.ReadAllText("../Store.Repository/SeedData/products.json");

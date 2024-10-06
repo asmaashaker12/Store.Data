@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Store.Repository;
+using Store.Repository.Basket;
 using Store.Repository.Interfaces;
 using Store.Service.CashServices;
 using Store.Service.HandleResponse;
 using Store.Service.Services;
+using Store.Service.Services.BasketService;
+using Store.Service.Services.BasketService.Dtos;
 using Store.Service.Services.Dtos;
 
 namespace Store.Web.ApplicationServiceExtensions
@@ -15,6 +18,9 @@ namespace Store.Web.ApplicationServiceExtensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICashServices, CashService>();
+            services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddAutoMapper(typeof(BaskerProfile));
             services.AddAutoMapper(typeof(ProductProfile));
             services.Configure<ApiBehaviorOptions>(options =>
             {
