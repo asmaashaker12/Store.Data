@@ -16,7 +16,7 @@ namespace Store.Repository
             {
                 var user = new AppUser
                 {
-                  DisplayName="Asmaa Shaker",
+                  DisplayName="AsmaaShaker",
                   Email="en.asmaashaker@gmailcom",
                   UserName="asmaaShaker",
                   Address=new Address
@@ -28,7 +28,7 @@ namespace Store.Repository
                       PostalCode="1111"
                   }
                 };
-                await userManager.CreateAsync(user,"123");
+                await userManager.CreateAsync(user,"Password123456789");
             }
         }
     }

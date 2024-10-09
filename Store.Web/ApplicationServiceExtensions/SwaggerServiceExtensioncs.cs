@@ -14,7 +14,7 @@ namespace Store.Web.ApplicationServiceExtensions
                     Version = "v1",
                     Contact = new OpenApiContact
                     {
-                        Name = "Asmaa Shaker",
+                        Name = "AsmaaShaker",
                         Email = "en.asmaashaker@gmail.com"
                     }
                 });
