@@ -20,6 +20,7 @@ namespace Store.Data.Entities.OrderEntities
             => SubTotal + DeliveryMethod.Price;
         public IReadOnlyList<OrderItem> OrderItems { get; set; }
         public string? BasketId { get; set; }
+        public string? PaymentIntendId { get; set; }
 
     }
 }

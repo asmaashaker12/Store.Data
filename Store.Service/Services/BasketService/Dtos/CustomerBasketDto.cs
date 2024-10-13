@@ -10,9 +10,11 @@ namespace Store.Service.Services.BasketService.Dtos
     public class CustomerBasketDto
     {
         public string? Id { get; set; }
-        public int? DeliveryMethod { get; set; }
+        public int? DeliveryMethodId { get; set; }
         public decimal ShippingPrice { get; set; }
         public List<BaketItemDto> BaketItems { get; set; } = new List<BaketItemDto>();
+        public string? PaymentIntendId { get; set; }
+        public string? ClientSecret { get; set; }
 
     }
 }

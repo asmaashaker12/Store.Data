@@ -4,6 +4,8 @@ using Store.Repository.Basket;
 using Store.Repository.Interfaces;
 using Store.Service.CashServices;
 using Store.Service.HandleResponse;
+using Store.Service.OrderServices;
+using Store.Service.OrderServices.OrderDtos;
 using Store.Service.Services;
 using Store.Service.Services.BasketService;
 using Store.Service.Services.BasketService.Dtos;
@@ -23,9 +25,11 @@ namespace Store.Web.ApplicationServiceExtensions
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddAutoMapper(typeof(BaskerProfile));
             services.AddAutoMapper(typeof(ProductProfile));
+            services.AddAutoMapper(typeof(OrderProfile));
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actioncontext =>

@@ -23,9 +23,10 @@ namespace Store.Repository
                   {
                       FirstName="Asmaa",
                       LastName="Shaker",
-                      City="Bni Suef",
+                      City="BniSuef",
                       State="Cairo",
-                      PostalCode="1111"
+                      PostalCode="1111",
+                      Street="FriendsStreet"
                   }
                 };
                 await userManager.CreateAsync(user,"Password123456789");
