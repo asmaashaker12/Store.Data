@@ -5,6 +5,8 @@ using Store.Repository.Interfaces;
 using Store.Repository.Specification.OrderSpecs;
 using Store.Service.OrderServices.OrderDtos;
 using Store.Service.Services.BasketService;
+using Store.Service.Services.PaymentServices;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +18,17 @@ namespace Store.Service.OrderServices
     public class OrderService : IOrderService
     {
         private readonly IBasketService _basketService;
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPaymentService _paymentService;
 
-        public OrderService(IBasketService basketService,IUnitOfWork unitOfWork,IMapper mapper)
+        public OrderService(IBasketService basketService,IUnitOfWork unitOfWork,IMapper mapper,IPaymentService paymentService)
         {
             _basketService = basketService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _paymentService = paymentService;
         }
         public async Task<OrderDetailsDto> CreateOrderAsync(OrderDto input)
         {
@@ -33,7 +38,7 @@ namespace Store.Service.OrderServices
             var orderItems = new List<OrderItemDto>();
             foreach (var item in basket.BaketItems)
             {
-                var productitem = await _unitOfWork.Repository<Product, int>().GetByIdAsync(item.ProductId);
+                var productitem = await _unitOfWork.Repository<Data.Entities.Product, int>().GetByIdAsync(item.ProductId);
                 if (productitem is null)
                     throw new Exception($"Product With Id {item.ProductId} Not Exist");
 
@@ -57,8 +62,11 @@ namespace Store.Service.OrderServices
                 if (deliveryMethod is null)
                     throw new Exception("Delivery Method not Provided");
                 var subtotal=orderItems.Sum(x=>x.Quantity*x.Price);
-
-                var mappedShiipingAddress = _mapper.Map<ShippingAddress>(input.ShippingAddress);
+            var specs = new OrderWithPaymentIntendSpecification(basket?.PaymentIntendId);
+            var existingorder = await _unitOfWork.Repository<Order, int>().GetByIdSpecificationsAsync(specs);
+            if (existingorder is null)
+                await _paymentService.CreateOrUpdatePaymentIntent(basket);
+            var mappedShiipingAddress = _mapper.Map<ShippingAddress>(input.ShippingAddress);
                 var mappedOrderItems=_mapper.Map<List<OrderItem>>(orderItems);
                 var order = new Order
                 {
@@ -68,6 +76,7 @@ namespace Store.Service.OrderServices
                     BasketId = input.BasketId,
                     OrderItems = mappedOrderItems,
                     SubTotal = subtotal,
+                    PaymentIntendId=basket.PaymentIntendId
                 };
                 await _unitOfWork.Repository<Order, int>().AddAsync(order);
                 await _unitOfWork.CompleteAsync();
@@ -94,9 +103,9 @@ namespace Store.Service.OrderServices
             return mappedOrer;
         }
 
-        public async Task<IReadOnlyList<OrderDetailsDto>> GetOrdersByIdAsync(int Id)
+        public async Task<IReadOnlyList<OrderDetailsDto>> GetOrdersByIdAsync(int Id,string buyeremail)
         {
-            var specs = new OrderWithItemSpecification(Id);
+            var specs = new OrderWithItemSpecification(Id,buyeremail);
             var order = await _unitOfWork.Repository<Order, int>().GetByIdSpecificationsAsync(specs);
             if (order is null )
                 throw new Exception($"You not  have any orders with id {Id} ");

@@ -12,7 +12,7 @@ namespace Store.Service.OrderServices
     {
         Task<OrderDetailsDto>CreateOrderAsync(OrderDto  input);
         Task<IReadOnlyList<OrderDetailsDto>>GetAllOrdersForUserAsync(string BuyerEmail);
-        Task<IReadOnlyList<OrderDetailsDto>>GetOrdersByIdAsync(int Id);
+        Task<IReadOnlyList<OrderDetailsDto>>GetOrdersByIdAsync(int Id,string buyeremail);
         Task<IReadOnlyList<DeliveryMethod>>GetAllDeliveryMethodAsync();
     }
 }
